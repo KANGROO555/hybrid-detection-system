@@ -1,4 +1,4 @@
-# Hybrid Detection System
+#Hybrid Detection System
 
 A real-time network intrusion detection system that combines **Suricata NIDS** (signature-based) with **LightGBM machine learning** (anomaly-based) through an intelligent **Fusion Layer**, enriched with **MITRE ATT&CK** mapping, **Wazuh SIEM** integration, and an **AI analyst agent** powered by Llama 3.2.
 
