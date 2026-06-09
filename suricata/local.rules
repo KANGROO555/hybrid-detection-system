@@ -1,0 +1,35 @@
+# Port scan detection
+alert tcp any any -> $HOME_NET any (msg:"LOCAL Port Scan Detected"; flags:S; threshold: type both, track by_src, count 20, seconds 10; classtype:network-scan; sid:9000001; rev:1;)
+
+# SSH Brute force
+alert tcp any any -> $HOME_NET 22 (msg:"LOCAL SSH Brute Force Attempt"; flow:to_server; threshold: type both, track by_src, count 5, seconds 60; classtype:attempted-admin; sid:9000002; rev:1;)
+
+# Nmap SYN scan
+alert tcp any any -> $HOME_NET any (msg:"LOCAL Nmap SYN Scan"; flags:S,12; threshold: type both, track by_src, count 10, seconds 5; classtype:network-scan; sid:9000003; rev:1;)
+
+# Nmap NULL scan
+alert tcp any any -> $HOME_NET any (msg:"LOCAL Nmap NULL Scan"; flags:0; classtype:network-scan; sid:9000004; rev:1;)
+
+# Nmap FIN scan
+alert tcp any any -> $HOME_NET any (msg:"LOCAL Nmap FIN Scan"; flags:F,12; classtype:network-scan; sid:9000005; rev:1;)
+
+# Nmap XMAS scan
+alert tcp any any -> $HOME_NET any (msg:"LOCAL Nmap XMAS Scan"; flags:FPU; classtype:network-scan; sid:9000006; rev:1;)
+
+# HTTP brute force
+alert http any any -> $HOME_NET 80 (msg:"LOCAL HTTP Brute Force"; threshold: type both, track by_src, count 20, seconds 10; classtype:attempted-admin; sid:9000007; rev:1;)
+
+# Hydra SSH detection
+alert tcp any any -> $HOME_NET 22 (msg:"LOCAL Hydra SSH Attack"; flow:to_server,established; content:"SSH"; threshold: type both, track by_src, count 10, seconds 30; classtype:attempted-admin; sid:9000008; rev:1;)
+
+# FTP brute force
+alert tcp any any -> $HOME_NET 21 (msg:"LOCAL FTP Brute Force"; threshold: type both, track by_src, count 5, seconds 60; classtype:attempted-admin; sid:9000009; rev:1;)
+
+# Nikto web scanner
+alert http any any -> $HOME_NET 80 (msg:"LOCAL Nikto Web Scanner"; http.user_agent; content:"Nikto"; classtype:network-scan; sid:9000010; rev:1;)
+
+# dirb web scanner  
+alert http any any -> $HOME_NET 80 (msg:"LOCAL DirBuster/dirb Scan"; http.user_agent; content:"DirBuster"; classtype:network-scan; sid:9000011; rev:1;)
+
+# Nmap OS detection
+alert tcp any any -> $HOME_NET any (msg:"LOCAL Nmap OS Detection"; flags:SE; classtype:network-scan; sid:9000012; rev:1;)

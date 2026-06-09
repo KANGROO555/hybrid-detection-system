@@ -1,0 +1,4 @@
+<decoder name="hybrid_ids">
+  <prematch>{"hybrid_ids_level":</prematch>
+  <plugin_decoder>JSON_Decoder</plugin_decoder>
+</decoder>

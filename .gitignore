@@ -1,0 +1,28 @@
+# Models (too large for GitHub)
+*.pkl
+*.joblib
+
+# Datasets
+*.csv
+*.pkl
+archive/
+combined_dataset.pkl
+
+# MITRE database
+enterprise-attack.json
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# Logs
+*.log
+alerts.json
+test_fresh.csv
+
+# OS
+.DS_Store
+Thumbs.db
