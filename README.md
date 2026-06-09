@@ -68,11 +68,11 @@ Suricata    NFStream
 | VM | OS | IP | Role |
 |---|---|---|---|
 | Kali Linux | Kali 2024 | 10.0.0.5 | Attacker |
-| Ubuntu Desktop | Ubuntu 22.04 | 10.0.0.6 | Victim |
+| Ubuntu Desktop | Ubuntu 22.04 |   10.0.0.6 | Victim |
 | IDS/SIEM VM | Ubuntu Server | 10.0.0.4 | Detection (12GB RAM) |
 | Windows Host | Windows 11 | 192.168.1.74 | Ollama GPU inference |
 
-**Network:** VirtualBox NAT Network (10.0.0.0/24), promiscuous mode enabled via VBoxManage
+**Network:**VirtualBox NAT Network (10.0.0.0/24), promiscuous mode enabled via VBoxManage
 
 ---
 
