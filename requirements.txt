@@ -1,9 +1,0 @@
-nfstream==6.5.3
-lightgbm
-xgboost
-scikit-learn
-pandas
-numpy
-joblib
-requests
-mitreattack-python
